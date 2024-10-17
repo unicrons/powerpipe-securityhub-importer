@@ -16,7 +16,7 @@ When working with AWS SecurityHub findings from multiple accounts or regions, it
 
 - Import Powerpipe ASFF findings into AWS SecurityHub for each AWS Account and Region.
 - Skip `PASSED` and `NOT_AVAILABLE` findings if desired.
-- It is fast!
+- It is fast! :rocket:
 
 > [!NOTE]
 > Are you using Steampipe in your AWS Organizations? Check [steampipe-config-generator](https://github.com/unicrons/steampipe_config_generator) tool!
