@@ -86,7 +86,10 @@ func SecurityHubImportFindings(findingsPath, roleName, sessionName string, onlyF
 
 					err = sh.batchImportFindings(filteredFindings)
 					if err != nil {
-						log.Error("error importing securityhub findings:", err)
+						for _, finding := range filteredFindings {
+							log.Debugf("finding region: %s, productArn: %s", string(*finding.Region), string(*finding.ProductArn))
+						}
+						log.Error("error importing securityhub findings: ", err)
 						return
 					}
 
