@@ -3,12 +3,15 @@ package aws
 import (
 	"encoding/json"
 	"os"
+	"strings"
 
 	"github.com/unicrons/powerpipe-securityhub-importer/pkg/utils"
 
 	"github.com/aws/aws-sdk-go-v2/service/securityhub/types"
 	log "github.com/sirupsen/logrus"
 )
+
+const globalRegion = "us-east-1"
 
 // convert findings from asff json to types.AwsSecurityFinding
 func readFindings(findingsPath string) ([]types.AwsSecurityFinding, error) {
@@ -71,7 +74,17 @@ func groupFindings(findings []types.AwsSecurityFinding) (map[string]map[string][
 	groupedFindings := make(map[string]map[string][]types.AwsSecurityFinding)
 	for _, finding := range findings {
 		accountID := *finding.AwsAccountId
-		region := *finding.Region
+
+		productArnSplitted := strings.Split(*finding.ProductArn, ":")
+		region := productArnSplitted[3]
+
+		if region == "" {
+			log.Debugf("empty region in ProductArn: %s, using global region", *finding.ProductArn)
+
+			region = globalRegion
+			productArnSplitted[3] = globalRegion
+			*finding.ProductArn = strings.Join(productArnSplitted, ":")
+		}
 
 		if _, ok := groupedFindings[accountID]; !ok {
 			groupedFindings[accountID] = make(map[string][]types.AwsSecurityFinding)

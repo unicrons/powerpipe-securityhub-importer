@@ -9,7 +9,7 @@ import (
 func init() {
 	lvl, ok := os.LookupEnv("LOG_LEVEL")
 	if !ok {
-		lvl = "debug"
+		lvl = "info"
 	}
 
 	ll, err := log.ParseLevel(lvl)
@@ -18,7 +18,6 @@ func init() {
 	}
 
 	log.SetLevel(ll)
-	// log.SetFormatter(&log.JSONFormatter{})
 }
 
 func SetLoggerFormat(logFormat string) {
