@@ -11,6 +11,7 @@ We have created this tool to facilitate the integration between Powerpipe and AW
 
 You cannot import directly your findings to your centralized SecurityHub account. When working with multiple accounts or regions, it is required to import the findings into **their** account and region.
 
+![](./docs/powerpipe_securityhub_importer.png)
 
 ## Features
 
