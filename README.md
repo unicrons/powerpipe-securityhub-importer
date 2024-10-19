@@ -20,7 +20,7 @@ You cannot import directly your findings to your centralized SecurityHub account
 - It is fast! :rocket:
 
 > [!NOTE]
-> Are you using Steampipe in your AWS Organizations? Check [steampipe-config-generator](https://github.com/unicrons/steampipe_config_generator) tool!
+> Are you using Steampipe in your AWS Organizations? Check [steampipe-config-generator](https://github.com/unicrons/steampipe-config-generator) tool!
 
 ## Requirements
 
