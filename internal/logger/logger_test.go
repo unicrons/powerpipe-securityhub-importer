@@ -21,6 +21,9 @@ func TestNew_DefaultFormatIsText(t *testing.T) {
 	if !strings.Contains(out, "msg=hello") {
 		t.Errorf("expected slog text handler output (msg=hello), got: %s", out)
 	}
+	if !strings.Contains(out, "source=") {
+		t.Errorf("expected output to include the log call's source location, got: %s", out)
+	}
 }
 
 func TestNew_JSONFormat(t *testing.T) {
@@ -35,6 +38,9 @@ func TestNew_JSONFormat(t *testing.T) {
 	}
 	if parsed["msg"] != "hello" {
 		t.Errorf(`parsed["msg"] = %v, want "hello"`, parsed["msg"])
+	}
+	if _, ok := parsed["source"]; !ok {
+		t.Errorf("expected output to include a \"source\" field, got: %s", out)
 	}
 }
 
