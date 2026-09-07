@@ -3,7 +3,7 @@ package aws
 import (
 	"context"
 	"errors"
-	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -95,7 +95,7 @@ func TestSecurityHubClient_BatchImport_ChunksAtLimit(t *testing.T) {
 	if imported != 150 || failed != 0 {
 		t.Errorf("imported = %d, failed = %d, want 150, 0", imported, failed)
 	}
-	if want := []int{100, 50}; !reflect.DeepEqual(api.gotSizes, want) {
+	if want := []int{100, 50}; !slices.Equal(api.gotSizes, want) {
 		t.Errorf("chunk sizes = %v, want %v", api.gotSizes, want)
 	}
 }
@@ -165,7 +165,7 @@ func TestChunkBy(t *testing.T) {
 			for i, c := range chunks {
 				gotSizes[i] = len(c)
 			}
-			if !reflect.DeepEqual(gotSizes, tt.wantSizes) {
+			if !slices.Equal(gotSizes, tt.wantSizes) {
 				t.Errorf("chunk sizes = %v, want %v", gotSizes, tt.wantSizes)
 			}
 		})
