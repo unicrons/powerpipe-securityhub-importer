@@ -1,6 +1,6 @@
 module github.com/unicrons/powerpipe-securityhub-importer
 
-go 1.23.2
+go 1.27.1
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.32.7
