@@ -8,7 +8,7 @@ import (
 
 func TestSecurityHubBackend_Import_BuildsRoleARN(t *testing.T) {
 	api := &fakeSTSAPI{output: fakeAssumeRoleOutput()}
-	b := &SecurityHubBackend{stsClient: api, roleName: "my-role", sessionName: "test-session"}
+	b := &securityHubBackend{stsClient: api, roleName: "my-role", sessionName: "test-session"}
 
 	// No findings, so BatchImport short-circuits before any network call - this exercises the
 	// whole Import path (role ARN construction, assume-role, client construction) with no real
@@ -34,7 +34,7 @@ func TestSecurityHubBackend_Import_BuildsRoleARN(t *testing.T) {
 
 func TestSecurityHubBackend_Import_AssumeRoleErrorMentionsAccount(t *testing.T) {
 	wantErr := errors.New("AccessDenied")
-	b := &SecurityHubBackend{stsClient: &fakeSTSAPI{err: wantErr}, roleName: "my-role", sessionName: "test-session"}
+	b := &securityHubBackend{stsClient: &fakeSTSAPI{err: wantErr}, roleName: "my-role", sessionName: "test-session"}
 
 	_, _, err := b.Import(t.Context(), "222222222222", "us-east-1", nil)
 	if !errors.Is(err, wantErr) {

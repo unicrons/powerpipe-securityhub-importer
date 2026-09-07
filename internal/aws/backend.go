@@ -10,10 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 )
 
-// SecurityHubBackend assumes a role in one AWS account/region and imports findings there. It
+// securityHubBackend assumes a role in one AWS account/region and imports findings there. It
 // implicitly satisfies the importer package's SecurityHubBackend interface - not referenced
-// here directly, to avoid internal/aws importing the package that consumes it.
-type SecurityHubBackend struct {
+// here directly, to avoid internal/aws importing the package that consumes it. Left unexported:
+// callers only ever get one back from NewSecurityHubBackend and use it through that interface.
+type securityHubBackend struct {
 	stsClient   stscreds.AssumeRoleAPIClient
 	roleName    string
 	sessionName string
@@ -21,8 +22,8 @@ type SecurityHubBackend struct {
 
 // NewSecurityHubBackend returns a backend that assumes roleName in each target account, using
 // cfg's credentials to call AssumeRole.
-func NewSecurityHubBackend(cfg aws.Config, roleName, sessionName string) *SecurityHubBackend {
-	return &SecurityHubBackend{
+func NewSecurityHubBackend(cfg aws.Config, roleName, sessionName string) *securityHubBackend {
+	return &securityHubBackend{
 		stsClient:   sts.NewFromConfig(cfg),
 		roleName:    roleName,
 		sessionName: sessionName,
@@ -32,7 +33,7 @@ func NewSecurityHubBackend(cfg aws.Config, roleName, sessionName string) *Securi
 // Import assumes b.roleName in accountID/region, then imports findings there. Each call builds
 // its own config and client from local variables, so concurrent calls for different
 // accounts/regions never share mutable state.
-func (b *SecurityHubBackend) Import(ctx context.Context, accountID, region string, findings []types.AwsSecurityFinding) (imported, failed int, err error) {
+func (b *securityHubBackend) Import(ctx context.Context, accountID, region string, findings []types.AwsSecurityFinding) (imported, failed int, err error) {
 	roleArn := fmt.Sprintf("arn:aws:iam::%s:role/%s", accountID, b.roleName)
 
 	cfg, err := AssumeRoleConfig(ctx, b.stsClient, roleArn, b.sessionName, region)
