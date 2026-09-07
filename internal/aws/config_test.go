@@ -14,9 +14,12 @@ import (
 type fakeSTSAPI struct {
 	output *sts.AssumeRoleOutput
 	err    error
+
+	gotParams *sts.AssumeRoleInput // params from the most recent call, for assertions
 }
 
 func (f *fakeSTSAPI) AssumeRole(ctx context.Context, params *sts.AssumeRoleInput, optFns ...func(*sts.Options)) (*sts.AssumeRoleOutput, error) {
+	f.gotParams = params
 	if f.err != nil {
 		return nil, f.err
 	}
