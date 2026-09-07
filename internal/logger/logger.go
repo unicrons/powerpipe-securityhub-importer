@@ -7,9 +7,8 @@ import (
 	"os"
 )
 
-// New returns a logger writing to stderr: human-readable text for "default", structured JSON
-// for "json". Its level is read from the LOG_LEVEL env var (default info). Every record
-// includes the source file and line of the log call, useful for troubleshooting.
+// New returns a logger writing to stderr, formatted as either human-readable text ("default")
+// or JSON ("json"). Its level is read from the LOG_LEVEL env var (default info).
 func New(format string) *slog.Logger {
 	opts := &slog.HandlerOptions{Level: levelFromEnv(), AddSource: true}
 
