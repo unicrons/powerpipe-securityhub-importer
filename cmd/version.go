@@ -1,0 +1,26 @@
+package cmd
+
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
+
+// Version, Commit, and Date are set via -ldflags at build time by GoReleaser.
+var (
+	Version = "dev"
+	Commit  = "none"
+	Date    = "unknown"
+)
+
+// NewVersionCmd builds the "version" subcommand.
+func NewVersionCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "version",
+		Short: "Print version information",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			_, err := fmt.Fprintf(cmd.OutOrStdout(), "powerpipe-securityhub-importer %s (commit %s, built %s)\n", Version, Commit, Date)
+			return err
+		},
+	}
+}
