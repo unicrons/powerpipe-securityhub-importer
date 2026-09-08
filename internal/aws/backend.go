@@ -38,7 +38,10 @@ func (b *securityHubBackend) Import(ctx context.Context, accountID, region strin
 
 	cfg, err := AssumeRoleConfig(ctx, b.stsClient, roleArn, b.sessionName, region)
 	if err != nil {
-		return 0, 0, fmt.Errorf("account %s: assuming role: %w", accountID, err)
+		// None of findings could even be attempted - count them all as failed, the same way
+		// BatchImport already does for a chunk whose own API call errors out, so the aggregate
+		// Result never under-reports a failure just because it happened before submission.
+		return 0, len(findings), fmt.Errorf("account %s: assuming role: %w", accountID, err)
 	}
 
 	return NewSecurityHubClient(cfg).BatchImport(ctx, findings)
