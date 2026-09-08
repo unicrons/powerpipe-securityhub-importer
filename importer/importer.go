@@ -41,8 +41,6 @@ type Importer interface {
 }
 
 // SecurityHubBackend assumes a role in one AWS account/region and imports findings there.
-// Defined here, where it's consumed - internal/aws.NewSecurityHubBackend returns a real,
-// SDK-backed implementation; tests use an in-memory fake instead.
 type SecurityHubBackend interface {
 	Import(ctx context.Context, accountID, region string, findings []types.AwsSecurityFinding) (imported, failed int, err error)
 }
@@ -72,10 +70,10 @@ type job struct {
 	findings  []types.AwsSecurityFinding
 }
 
-// Import groups findings by account/region and imports each group concurrently. Each
-// account/region is independent, so one failing doesn't stop the others: every job's outcome is
-// aggregated into Result, and every job's error - accountID and region attached, so it's
-// identifiable among potentially hundreds - is joined into the single error returned.
+// Import runs each account/region's findings concurrently. Each account/region is independent,
+// so one failing doesn't stop the others: every job's outcome is aggregated into Result, and
+// every job's error - accountID and region attached, so it's identifiable among potentially
+// hundreds - is joined into the single error returned.
 func (im *importer) Import(ctx context.Context, findings []types.AwsSecurityFinding) (Result, error) {
 	if im.opts.OnlyFailed {
 		findings = filterFailed(findings)
@@ -96,9 +94,8 @@ func (im *importer) Import(ctx context.Context, findings []types.AwsSecurityFind
 		errs             []error
 	)
 
-	// errgroup is used only to bound concurrency via SetLimit - its own error-propagation and
-	// cancel-on-first-error behavior goes unused, since every job below always returns nil to
-	// the group; a job's real error is instead appended to errs directly.
+	// errgroup is used only for SetLimit; its error-propagation and cancel-on-first-error
+	// behavior goes unused since every job below always returns nil to the group.
 	g := new(errgroup.Group)
 	g.SetLimit(maxConcurrentImports)
 
