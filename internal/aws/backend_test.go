@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 	"testing"
+
+	"github.com/aws/aws-sdk-go-v2/service/securityhub/types"
 )
 
 func TestSecurityHubBackend_Import_BuildsRoleARN(t *testing.T) {
@@ -32,11 +34,18 @@ func TestSecurityHubBackend_Import_BuildsRoleARN(t *testing.T) {
 	}
 }
 
-func TestSecurityHubBackend_Import_AssumeRoleErrorMentionsAccount(t *testing.T) {
+// TestSecurityHubBackend_Import_AssumeRoleErrorCountsAllFindingsAsFailed is the regression test
+// for a bug where an assume-role failure reported {imported: 0, failed: 0} regardless of how
+// many findings were meant for that account/region - misleadingly suggesting nothing was lost.
+func TestSecurityHubBackend_Import_AssumeRoleErrorCountsAllFindingsAsFailed(t *testing.T) {
 	wantErr := errors.New("AccessDenied")
 	b := &securityHubBackend{stsClient: &fakeSTSAPI{err: wantErr}, roleName: "my-role", sessionName: "test-session"}
 
-	_, _, err := b.Import(t.Context(), "222222222222", "us-east-1", nil)
+	findings := make([]types.AwsSecurityFinding, 3)
+	imported, failed, err := b.Import(t.Context(), "222222222222", "us-east-1", findings)
+	if imported != 0 || failed != len(findings) {
+		t.Errorf("imported = %d, failed = %d, want 0, %d", imported, failed, len(findings))
+	}
 	if !errors.Is(err, wantErr) {
 		t.Errorf("error = %v, want it to wrap %v", err, wantErr)
 	}
