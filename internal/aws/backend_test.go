@@ -34,9 +34,6 @@ func TestSecurityHubBackend_Import_BuildsRoleARN(t *testing.T) {
 	}
 }
 
-// TestSecurityHubBackend_Import_AssumeRoleErrorCountsAllFindingsAsFailed is the regression test
-// for a bug where an assume-role failure reported {imported: 0, failed: 0} regardless of how
-// many findings were meant for that account/region - misleadingly suggesting nothing was lost.
 func TestSecurityHubBackend_Import_AssumeRoleErrorCountsAllFindingsAsFailed(t *testing.T) {
 	wantErr := errors.New("AccessDenied")
 	b := &securityHubBackend{stsClient: &fakeSTSAPI{err: wantErr}, roleName: "my-role", sessionName: "test-session"}
