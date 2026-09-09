@@ -57,6 +57,11 @@ Versioning](./README.md#versioning). Everything below shipped since `v0.1.1`.
   it can.
 - Findings SecurityHub itself rejected (`BatchImportFindings`'s `FailedFindings`) used to be
   logged only; they're now counted and surfaced as part of that same error.
+- An assume-role failure for an account/region used to report zero failed findings, regardless of
+  how many were meant for it. It now counts them all as failed.
+- Findings imported by this tool had no region in the SecurityHub console's default Region column
+  or its "Resource Region" filter, even though the finding's own Region was set correctly -
+  `Resources[].Region` is a separate field, which is now backfilled from the finding's region.
 
 ## [0.1.1] and earlier
 
