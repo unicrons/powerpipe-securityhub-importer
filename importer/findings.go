@@ -36,7 +36,9 @@ func assignUniqueIDs(findings []types.AwsSecurityFinding) []types.AwsSecurityFin
 
 // groupByAccountRegion groups findings by AWS account and region, the region taken from each
 // finding's ProductArn. A finding with no region in its ProductArn is assigned globalRegion, and
-// its ProductArn is rewritten to match.
+// its ProductArn is rewritten to match. Each resource missing its own Region is backfilled with
+// the same value - the SecurityHub console's Region column and filters read Resources[].Region,
+// not the finding's own Region field.
 func groupByAccountRegion(findings []types.AwsSecurityFinding) map[string]map[string][]types.AwsSecurityFinding {
 	grouped := make(map[string]map[string][]types.AwsSecurityFinding)
 
@@ -50,6 +52,12 @@ func groupByAccountRegion(findings []types.AwsSecurityFinding) map[string]map[st
 			arnParts[3] = globalRegion
 			joined := strings.Join(arnParts, ":")
 			finding.ProductArn = &joined
+		}
+
+		for i, resource := range finding.Resources {
+			if resource.Region == nil || *resource.Region == "" {
+				finding.Resources[i].Region = &region
+			}
 		}
 
 		if grouped[accountID] == nil {
