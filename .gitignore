@@ -25,5 +25,4 @@ go.work
 dist/
 
 # local findings files used for manual testing
-findings*.json
-findings.securityhub
+findings*

@@ -106,6 +106,31 @@ func TestGroupByAccountRegion_EmptyRegionFallsBackToGlobal(t *testing.T) {
 	}
 }
 
+func TestGroupByAccountRegion_BackfillsMissingResourceRegion(t *testing.T) {
+	findings := []types.AwsSecurityFinding{
+		findingWith("id-1", "111111111111", "arn:aws:securityhub:us-east-1::product/test/test", "FAILED", "res-1"),
+	}
+
+	grouped := groupByAccountRegion(findings)
+
+	got := grouped["111111111111"]["us-east-1"][0].Resources[0].Region
+	if got == nil || *got != "us-east-1" {
+		t.Errorf("Resources[0].Region = %v, want %q", got, "us-east-1")
+	}
+}
+
+func TestGroupByAccountRegion_PreservesExistingResourceRegion(t *testing.T) {
+	finding := findingWith("id-1", "111111111111", "arn:aws:securityhub:us-east-1::product/test/test", "FAILED", "res-1")
+	finding.Resources[0].Region = strPtr("eu-west-1")
+
+	grouped := groupByAccountRegion([]types.AwsSecurityFinding{finding})
+
+	got := grouped["111111111111"]["us-east-1"][0].Resources[0].Region
+	if got == nil || *got != "eu-west-1" {
+		t.Errorf("Resources[0].Region = %v, want the pre-existing %q preserved", got, "eu-west-1")
+	}
+}
+
 func TestHashSHA512(t *testing.T) {
 	a := hashSHA512("res-1")
 	b := hashSHA512("res-1")
