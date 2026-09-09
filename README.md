@@ -56,25 +56,21 @@ You cannot import directly your findings to your centralized SecurityHub account
 ## How to use it
 
 ```bash
-Usage of powerpipe-securityhub-importer:
-  -failed
-    	Skip Importing PASSED & NOT_AVAILABLE findings
-  -findings string
-    	SecurityHub asff json file path
-  -log string
-    	Log format: default, json (default "default")
-  -role string
-    	AWS assume role name
-  -session string
-    	AWS assume role session name (default "powerpipe-securityhub-importer")
+./powerpipe-securityhub-importer --role role-name-with-path --findings ./findings.asff.json
 ```
 
-Example:
-```bash
-./powerpipe_securityhub_importer -findings ./findings.asff.json -role role-name-with-path
-```
+To skip `PASSED` and `NOT_AVAILABLE` findings, add `--only-failed`.
 
-To skip `PASSED` and `NOT_AVAILABLE` findings add `-failed` flag.
+Run `./powerpipe-securityhub-importer --help` for the full list of flags, and
+`./powerpipe-securityhub-importer --version` to print the installed version.
+
+
+## Versioning
+
+This project follows [Semantic Versioning](https://semver.org/): breaking changes (to CLI flags
+or to the Go library API in `importer/`) bump the major version, new features bump the minor
+version, and fixes bump the patch version. See [CHANGELOG.md](./CHANGELOG.md) for what changed in
+each release.
 
 
 ## Contribute
