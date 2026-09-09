@@ -143,10 +143,6 @@ func TestImporter_Import_AggregatesAcrossAccountsAndRegions(t *testing.T) {
 	}
 }
 
-// TestImporter_Import_OneFailureIsNotSilencedOrFatal is the regression test for the bug this
-// design fixes: previously, a failing account/region was logged and dropped, leaving the overall
-// import to report success (exit 0) regardless. Here, one job failing must neither stop the
-// others nor be lost from the returned error.
 func TestImporter_Import_OneFailureIsNotSilencedOrFatal(t *testing.T) {
 	wantErr := errors.New("AccessDenied")
 	backend := &fakeSecurityHubBackend{
